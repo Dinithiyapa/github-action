@@ -6,16 +6,28 @@ var pg = require('pg');
 var conString = process.env.DB; // "postgres://username:password@localhost/database";
 
 // Routes
+
+// Root route
+app.get('/', function(req, res) {
+  res.json({
+    message: 'Welcome to the API!',
+    available_routes: [
+      '/api/status'
+    ]
+  });
+});
+
+// Status route
 app.get('/api/status', function(req, res) {
   pg.connect(conString, function(err, client, done) {
-    if(err) {
+    if (err) {
       return res.status(500).send('error fetching client from pool');
     }
     client.query('SELECT now() as time', [], function(err, result) {
-      //call `done()` to release the client back to the pool
+      // Release the client back to the pool
       done();
 
-      if(err) {
+      if (err) {
         return res.status(500).send('error running query');
       }
 
@@ -27,17 +39,17 @@ app.get('/api/status', function(req, res) {
   });
 });
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handlers
+// Error handlers
 
-// development error handler
-// will print stacktrace
+// Development error handler
+// Will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -48,8 +60,8 @@ if (app.get('env') === 'development') {
   });
 }
 
-// production error handler
-// no stacktraces leaked to user
+// Production error handler
+// No stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.json({
@@ -57,6 +69,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
