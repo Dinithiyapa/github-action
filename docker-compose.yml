@@ -1,7 +1,10 @@
-version: '3'
+version: '3.8'
+
 services:
   api:
-    image: node:6.17.1
+    build:
+      context: ./api  # Specify the build context (directory containing the Dockerfile)
+      dockerfile: Dockerfile  # Optionally specify the Dockerfile name if it's not the default "Dockerfile"
     ports:
       - "4000:4000"
     volumes:
@@ -14,10 +17,12 @@ services:
     depends_on:
       - db
     networks:
-      - backend # Must be a list
+      - backend
 
   web:
-    image: node:6.17.1
+    build:
+      context: ./web  # Specify the build context (directory containing the Dockerfile)
+      dockerfile: Dockerfile  # Optionally specify the Dockerfile name if it's not the default "Dockerfile"
     ports:
       - "3000:3000"
     volumes:
@@ -27,6 +32,8 @@ services:
     environment:
       - PORT=${WEB_PORT}
       - API_HOST=${API_HOST}
+    depends_on:
+      - api
     networks:
       - backend
 
@@ -42,6 +49,24 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - backend
+    depends_on:
+      - api
+      - web
 
 networks:
   backend:
@@ -49,4 +74,3 @@ networks:
 
 volumes:
   db_data:
-
