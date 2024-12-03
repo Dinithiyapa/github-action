@@ -6,13 +6,13 @@ services:
       context: ./api  
       dockerfile: Dockerfile  
     ports:
-      - "4000:4000"
+      - "4000-4002:4000"
     volumes:
       - ./api:/app
     working_dir: /app
     command: bash -c "npm install && npm start"
     environment:
-      - PORT=${API_PORT}
+      - PORT=4000
       - DB=${API_DB}
     depends_on:
       - db
@@ -24,13 +24,13 @@ services:
       context: ./web  
       dockerfile: Dockerfile   
     ports:
-      - "3000:3000"
+      - "3000-3001:3000"
     volumes:
       - ./web:/app
     working_dir: /app
     command: bash -c "npm install && npm start"
     environment:
-      - PORT=${WEB_PORT}
+      - PORT=3000
       - API_HOST=${API_HOST}
     depends_on:
       - api
