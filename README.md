@@ -1,40 +1,96 @@
-# devops-challenge-apps
+# Buzbud DevOps Challenge
 This repo contains code for a multi-tier application.
 
-The application overview is as follows
+## The application overview:
 
 ```
 web <=> api <=> db
 ```
+## Branch Overview
+### 1. main branch
+In this branch, the multi-tier application is deployed using Docker Compose.
 
-The folders `web` and `api` respectively describe how to install and run each app.
+ - Docker Compose orchestrates the services.
+  - Health checks ensure that the **DB** service is running correctly.
+  - Scalable **Web** and **API** services to handle increased load.
 
-# Busbud DevOps Challenge
-## Part 1: Code
-For this section, we expect the main deliverable to be code, delivered via Github.
+- **To Deploy**:
+  1. Clone the repository.
+  2. Run the following command to start the application with multiple instances:
+     ```bash
+     docker-compose up --scale web=3 --scale api=2
+     ```
+  3. Access the application through the specified ports for **Web** and **API**.
+---
 
-### 1. Infrastructure setup
-#### Objective
-Create the scripts (Terraform, Ansible or other) to deploy the multi-tier application with source code hosted at https://github.com/busbud/devops-challenge-apps
+### 2.docker-swarm branch
 
-#### Functional Requirements
-1. The web and api tiers must have multiple container instances.
-1. The API needs one database (PostgreSQL) and this service needs be in a container.
-1. The solution should support docker image versioning
-1. The solution should write all the logs to the Rsyslog service (Operating System and containers included)
-1. The solution must handle instance and container failures
-1. The result of running the scripts should be two publicly available tiers: web and api
-    1. Each tier should have either a dedicated subdomain (web.example.com, api.example.com, port 80 or 443 as you choose) or ports (host can be an IP address, with each port number of your choosing). In either case, please specify how we can access each service via curl
-1. We should be able to run the script against our own AWS infrastructure and be able to launch the same tiers with minimal custom configuration or install steps. Please specify the command to execute and any setup required to ensure a successful run. Again, please specify how you would expect we can access each service via curl
+This branch demonstrates deploying the application in a **Docker Swarm** environment using its native orchestration features for scaling and service management.
 
-#### Non-Functional Requirements
-1. The scripts should be delivered as a public repo on Github or a pull-request made against the https://github.com/busbud/devops-challenge-apps repo
+  - Docker Swarm automatically handles scaling of services.
+  - Health checks ensure the **DB** service is running smoothly.
 
-## Part 2: Prose
-For this section, we expect the main deliverable to be prose, delivered via Github (you can also upload a PDF) or a Google Doc. We mainly expect a description of the approach to implement your solution, as opposed to the code to implement it. However, if coding is faster, then by all means, deliver code!
+- **To Deploy**:
+  1. Initialize Docker Swarm:
+     ```bash
+     docker swarm init
+     ```
+  2. Deploy the stack:
+     ```bash
+     docker stack deploy -c docker-compose.yml buzbud
+     ```
+  3. The **Web** and **API** services are available and automatically scaled in the Swarm.
 
-### 2.1 Monitoring
-Suggest any solution to improve monitoring beyond the basics offered by AWS Cloudwatch.
+---
 
-### 2.2 Database Migrations
-Describe how to handle database migrations with respect to the api app code deployment.
+
+### 3. github-actions branch
+
+In this branch, **GitHub Actions** is used for **Continuous Integration and Continuous Deployment (CI/CD)**. This workflow automates building, pushing Docker images, and deploying the application to Docker Swarm.
+
+  - The `first-actions.yml` workflow builds and pushes Docker images for **Web** and **API** services.
+  - The workflow automatically deploys the application to Docker Swarm using the `docker stack deploy` command.
+
+
+- **To Trigger the Workflow**:
+  1. Push changes to the **main** branch or create a pull request to the **github-actions** branch.
+  2. GitHub Actions will:
+     - Build Docker images for both services.
+     - Push the images to **Docker Hub**.
+     - Deploy the application to **Docker Swarm**.
+
+---
+ ## Prerequisites
+Before deploying the application, ensure the following tools are installed:
+
+- **Docker**: [Install Docker](https://www.docker.com/get-started)
+- **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
+- **Docker Swarm**: [Set up Docker Swarm](https://docs.docker.com/engine/swarm/)
+- **Git**: [Install Git](https://git-scm.com/)
+- **GitHub Account**: [Create a GitHub account](https://github.com/) (for triggering workflows)
+
+---
+## Deployment Details
+The deployment configuration can be customized by modifying the `docker-compose.yml` file:
+
+- **Ports**: Adjust the ports for both **Web** and **API** services in the `ports` section.
+- **Scaling**: Change the number of instances for each service in the Docker Compose command or Docker Swarm setup.
+- **Environment Variables**: Configure environment variables for **Web**, **API**, and **DB** services in the `docker-compose.yml` file.
+
+---
+
+## Accessing the Services
+Once the services are up and running, you can access them:
+
+- **Web Service**: Accessible via `http://web.example.com` (or the specified port).
+- **API Service**: Accessible via `http://api.example.com` (or the specified port).
+
+## Testing with `curl`
+
+You can test the services using `curl`:
+
+1. **Web Service**:
+   ```bash
+   curl http://web.example.com
+   curl http://api.example.com
+
