@@ -1,3 +1,4 @@
+ENV API_HOST=http://buzbud-api-action:4000
 # Base image
 FROM node:16
 
