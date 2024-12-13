@@ -39,7 +39,7 @@ echo "Starting the web container..."
 docker run -d \
   -p 3000:3000 \
   --name buzbud-web-action \
-  --env API_URL=http://http://172.235.1.190:4000 \
+  --env API_URL=http://172.235.1.190:4000 \
   --link buzbud-api-action:buzbud-api-action \
   yapadinithi/buzbud-web-action:v1.0.0
 
