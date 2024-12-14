@@ -8,6 +8,10 @@ var routes = require('./routes/index'); // Load custom routes
 
 var app = express();
 
+// Set view engine
+app.set('views', path.join(__dirname, 'views')); // Define the directory for view files
+app.set('view engine', 'ejs'); // Set EJS as the view engine
+
 // Middleware
 app.use(logger('dev'));
 app.use(bodyParser.json());
