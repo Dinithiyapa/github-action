@@ -5,9 +5,9 @@ var { v4: uuidv4 } = require('uuid'); // Updated uuid import
 var { Pool } = require('pg'); // Use Pool for PostgreSQL connection pooling
 
 // Database connection string from environment variables
-var conString = process.env.API_DB || 'postgres://user1:password1@172.235.1.190:5432/busbud_db'; // Use public IP for DB
+var conString = process.env.API_DB; 
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 // Create a new Pool instance
 const pool = new Pool({
