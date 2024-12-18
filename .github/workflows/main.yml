@@ -20,17 +20,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 3: Set up Docker Compose
-      - name: Set up Docker Compose
+      # Step 3: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 4: Build and Push the Web Image using Docker Compose
-      - name: Build and push web service using Docker Compose
-        run: |
-          docker-compose -f docker-compose.yml build web  # Build only the web service
-          docker-compose -f docker-compose.yml push web  # Push the web service image
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
+      # Step 4: Build and Push the Web Image
+      - name: Build and push web image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./web  # Path to the web app's Dockerfile
+          push: true
+          tags: yapadinithi/buzbud-web-action:${{ github.run_number }}-${{ github.run_attempt }}  # Use run number and attempt number for tagging
 
   build-api:
     runs-on: ubuntu-latest
@@ -46,26 +46,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 3: Set up Docker Compose
-      - name: Set up Docker Compose
+      # Step 3: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 4: Build and Push the API Image using Docker Compose
-      - name: Build and push API service using Docker Compose
-        run: |
-          docker-compose -f docker-compose.yml build api  # Build only the API service
-          docker-compose -f docker-compose.yml push api  # Push the API service image
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
+      # Step 4: Build and Push the API Image
+      - name: Build and push API image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./api  # Path to the API's Dockerfile
+          push: true
+          tags: yapadinithi/buzbud-api-action:${{ github.run_number }}-${{ github.run_attempt }}  # Use run number and attempt number for tagging
 
   update-linode:
     name: Update Linode Server
     needs:
       - build-web
-      - build-api  # This job will wait for both build-web and build-api jobs to finish
+      - build-api
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Execute remote SSH commands
+      # Step 1: Execute remote SSH commands using password
       - name: Execute remote SSH commands
         uses: appleboy/ssh-action@master
         with:
@@ -74,7 +74,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            # Navigate to the deployment directory and pull the latest images
+            # Navigate to the deployment directory and run update commands
             cd /path/to/your/deployment
-            docker-compose pull  # Pull the latest images from Docker Hub
-            docker-compose up -d  # Restart the services with the new images
+            bash update.sh
