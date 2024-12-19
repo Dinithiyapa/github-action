@@ -75,5 +75,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             # Navigate to the deployment directory and run update commands
-            cd /path/to/your/deployment
+            cd /root
             bash update.sh
