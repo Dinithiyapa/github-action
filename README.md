@@ -61,6 +61,19 @@ Before deploying the application, ensure the following tools are installed:
 - **Docker Hub**: Sign up for Docker Hub (to store and distribute Docker images).
 - **GitHub Account**: [Create a GitHub account](https://github.com/) (for triggering workflows).
 
+> **Note:** Although a `docker-compose.yml` file has been added to this repository, it is not required for this project as Dockerfiles are used exclusively for containerization.
+### Verify the Deployment
+
+- **Web service**: **http://{linode-ip}:3000**
+  ![Web Service Screenshot](images/web.png)
+
+- **API service**: **http://{linode-ip}:4000/api/status**
+  ![API Service Status Screenshot](images/api.png)
+
+---
+
+### Author
+Dinithi Yapa
 
 ---
 
