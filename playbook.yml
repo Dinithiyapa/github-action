@@ -1,0 +1,6 @@
+---
+- name: Install Docker and Deploy Web and API
+  hosts: all
+  become: true
+  roles:
+    - deploy

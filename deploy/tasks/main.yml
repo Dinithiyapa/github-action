@@ -1,0 +1,36 @@
+---
+- name: Deploy Web and API Docker Containers to All Remote Hosts
+  hosts: remote_servers  # This targets all hosts in the remote_servers group
+  become: yes  # Use sudo for Docker commands
+
+  tasks:
+    - name: Pull web Docker image from Docker Hub
+      docker_image:
+        name: yapadinithi/buzbud-web-action
+        tag: "{{ web_image_tag }}"  # Use the web image tag passed during the job
+        source: pull
+
+    - name: Run web container
+      docker_container:
+        name: web-container
+        image: yapadinithi/buzbud-web-action:{{ web_image_tag }}
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"  # Expose port 80 if required
+
+    - name: Pull API Docker image from Docker Hub
+      docker_image:
+        name: yapadinithi/buzbud-api-action
+        tag: "{{ api_image_tag }}"  # Use the API image tag passed during the job
+        source: pull
+
+    - name: Run API container
+      docker_container:
+        name: api-container
+        image: yapadinithi/buzbud-api-action:{{ api_image_tag }}
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"  # Expose port 8080 if required
+
